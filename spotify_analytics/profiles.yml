@@ -1,0 +1,13 @@
+spotify_analytics:
+  outputs:
+    dev:
+      type: postgres
+      host: "spotify-pipeline-postgres-dev.c2dysqwkynce.us-east-1.rds.amazonaws.com"
+      port: 5432
+      user: "spotify_admin"
+      password: "ChangeThisPassword123!"
+      dbname: "spotify"
+      schema: public
+      threads: 4
+      
+  target: dev

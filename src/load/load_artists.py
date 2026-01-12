@@ -1,11 +1,9 @@
-import json
-from src.load.db import get_conn
-from src.extract.utils import raw_data_path
+from src.load.db_rds import get_rds_conn
+from src.extract.s3_utils import download_json_from_s3
 
 def load_artists():
-    path = raw_data_path() / "tracks.json"
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    # Read from S3
+    data = download_json_from_s3("tracks")
 
     artists = {}
 
@@ -18,7 +16,8 @@ def load_artists():
                 artist.get("genres", [])
             )
 
-    conn = get_conn()
+    # Write to RDS
+    conn = get_rds_conn()
     cur = conn.cursor()
 
     for artist in artists.values():
@@ -31,5 +30,10 @@ def load_artists():
         )
 
     conn.commit()
+    print(f"✅ Loaded {len(artists)} artists to RDS")
+    
     cur.close()
     conn.close()
+
+if __name__ == "__main__":
+    load_artists()

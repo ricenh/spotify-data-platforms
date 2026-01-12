@@ -1,0 +1,7 @@
+README.md
+setup.py
+spotify_data_platform.egg-info/PKG-INFO
+spotify_data_platform.egg-info/SOURCES.txt
+spotify_data_platform.egg-info/dependency_links.txt
+spotify_data_platform.egg-info/requires.txt
+spotify_data_platform.egg-info/top_level.txt

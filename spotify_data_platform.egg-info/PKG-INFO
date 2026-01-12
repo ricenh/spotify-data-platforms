@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: spotify-data-platform
+Version: 0.1.0
+Requires-Dist: requests
+Requires-Dist: psycopg2-binary
+Requires-Dist: python-dotenv
+Requires-Dist: boto3
+Requires-Dist: python-dateutil
+Dynamic: requires-dist

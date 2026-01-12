@@ -1,0 +1,25 @@
+# dbt Transformations Container
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install git
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install NEWER dbt versions (fixes protobuf bug)
+RUN pip install --no-cache-dir \
+    dbt-core==1.8.7 \
+    dbt-postgres==1.8.2
+
+# Copy dbt project
+COPY spotify_analytics/ ./spotify_analytics/
+COPY .env .
+
+# Set DBT_PROFILES_DIR
+ENV DBT_PROFILES_DIR=/app/spotify_analytics
+
+WORKDIR /app/spotify_analytics
+
+CMD ["dbt", "run"]

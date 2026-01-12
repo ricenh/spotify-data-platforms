@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw Spotify data loaded from API
+    database: spotify
+    schema: public
+    tables:
+      - name: plays
+      - name: tracks
+      - name: artists
+      - name: audio_features

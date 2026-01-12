@@ -1,16 +1,14 @@
-import json
 import requests
-from pathlib import Path
-from src.extract.utils import get_headers, raw_data_path, write_json
+from src.extract.utils import get_headers
+from src.extract.s3_utils import upload_json_to_s3, download_json_from_s3
 
 TRACKS_URL = "https://api.spotify.com/v1/tracks"
 BATCH_SIZE = 50
 
 def load_track_ids():
-    path = raw_data_path() / "recently_played.json"
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+    # Read from S3 instead of local disk
+    data = download_json_from_s3("recently_played")
+    
     return list({
         item["track"]["id"]
         for item in data["items"]
@@ -38,10 +36,11 @@ def extract_tracks():
         "tracks": tracks
     }
 
-    path = raw_data_path() / "tracks.json"
-    write_json(path, output)
-
-    print(f"Saved {len(tracks)} tracks → {path}")
+    # Upload to S3
+    s3_uri = upload_json_to_s3(output, "tracks")
+    
+    print(f"✅ Saved {len(tracks)} tracks to S3")
+    return s3_uri
 
 if __name__ == "__main__":
     extract_tracks()

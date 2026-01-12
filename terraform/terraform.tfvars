@@ -1,0 +1,6 @@
+aws_region   = "us-east-1"
+project_name = "spotify-pipeline"
+environment  = "dev"
+db_username  = "spotify_admin"
+db_password  = "ChangeThisPassword123!"
+RDS_PASSWORD = "ChangeThisPassword123!"

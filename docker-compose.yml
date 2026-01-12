@@ -1,15 +1,54 @@
-services:
-  postgres:
-    image: postgres:16
-    container_name: spotify_postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: spotify
-      POSTGRES_USER: spotify_user
-      POSTGRES_PASSWORD: spotify_pass
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+version: '3.8'
 
-volumes:
-  pgdata:
+services:
+  # ETL Pipeline
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spotify-pipeline
+    environment:
+      # Spotify API
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - SPOTIFY_REFRESH_TOKEN=${SPOTIFY_REFRESH_TOKEN}
+      # AWS S3
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET=${S3_BUCKET}
+      # AWS RDS
+      - RDS_HOST=${RDS_HOST}
+      - RDS_PORT=${RDS_PORT}
+      - RDS_DATABASE=${RDS_DATABASE}
+      - RDS_USER=${RDS_USER}
+      - RDS_PASSWORD=${RDS_PASSWORD}
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    networks:
+      - spotify-network
+
+  # dbt Transformations
+  dbt:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    container_name: spotify-dbt
+    environment:
+      - RDS_HOST=${RDS_HOST}
+      - RDS_PORT=${RDS_PORT}
+      - RDS_DATABASE=${RDS_DATABASE}
+      - RDS_USER=${RDS_USER}
+      - RDS_PASSWORD=${RDS_PASSWORD}
+    volumes:
+      - ./spotify_analytics:/app/spotify_analytics
+      - ./logs:/app/logs
+    networks:
+      - spotify-network
+    depends_on:
+      - pipeline
+
+networks:
+  spotify-network:
+    driver: bridge

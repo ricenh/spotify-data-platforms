@@ -1,19 +1,13 @@
-import json
 import requests
-from src.extract.utils import raw_data_path
+from src.extract.s3_utils import upload_json_to_s3, download_json_from_s3
 
 RECCOBEATS_URL = "https://api.reccobeats.com/v1/audio-features"
-BATCH_SIZE = 40  # ReccoBeats limit
-
+BATCH_SIZE = 40
 
 def load_track_ids():
-    """
-    Load Spotify track IDs from recently_played.json
-    """
-    path = raw_data_path() / "recently_played.json"
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+    # Read from S3
+    data = download_json_from_s3("recently_played")
+    
     ids = set()
     for item in data.get("items", []):
         track = item.get("track")
@@ -22,11 +16,9 @@ def load_track_ids():
 
     return list(ids)
 
-
 def chunks(lst, size):
     for i in range(0, len(lst), size):
         yield lst[i:i + size]
-
 
 def extract_audio_features():
     track_ids = load_track_ids()
@@ -37,9 +29,7 @@ def extract_audio_features():
         return
 
     for batch_num, batch in enumerate(chunks(track_ids, BATCH_SIZE), start=1):
-        params = {
-            "ids": ",".join(batch)
-        }
+        params = {"ids": ",".join(batch)}
 
         response = requests.get(
             RECCOBEATS_URL,
@@ -55,8 +45,6 @@ def extract_audio_features():
             raise RuntimeError("ReccoBeats request failed")
 
         data = response.json()
-
-        # ReccoBeats returns features under `content`
         batch_features = data.get("content", [])
         features.extend(batch_features)
 
@@ -67,12 +55,11 @@ def extract_audio_features():
         "audio_features": features
     }
 
-    out_path = raw_data_path() / "audio_features.json"
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(output, f, indent=2)
-
-    print(f"\nSaved {len(features)} audio features → {out_path}")
-
+    # Upload to S3
+    s3_uri = upload_json_to_s3(output, "audio_features")
+    
+    print(f"✅ Saved {len(features)} audio features to S3")
+    return s3_uri
 
 if __name__ == "__main__":
     extract_audio_features()
