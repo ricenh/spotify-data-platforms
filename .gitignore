@@ -1,1 +1,54 @@
+############################
+# Terraform (CRITICAL)
+############################
+
+# Terraform working directory (providers, plugins)
+.terraform/
+
+# Terraform state files (NEVER COMMIT)
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Terraform variables (may contain secrets)
+*.tfvars
+*.tfvars.json
+
+############################
+# AWS / Cloud
+############################
+
+# AWS CLI installer / artifacts
+awscliv2.zip
+aws/
+
+############################
+# Python / dbt
+############################
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+
+############################
+# Logs & temp files
+############################
+
+*.log
+*.tmp
+
+############################
+# OS / Editor
+############################
+
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+
 .env
