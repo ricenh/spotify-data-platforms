@@ -4,10 +4,11 @@ from src.extract.s3_utils import upload_json_to_s3, download_json_from_s3
 RECCOBEATS_URL = "https://api.reccobeats.com/v1/audio-features"
 BATCH_SIZE = 40
 
+
 def load_track_ids():
     # Read from S3
     data = download_json_from_s3("recently_played")
-    
+
     ids = set()
     for item in data.get("items", []):
         track = item.get("track")
@@ -16,9 +17,11 @@ def load_track_ids():
 
     return list(ids)
 
+
 def chunks(lst, size):
     for i in range(0, len(lst), size):
-        yield lst[i:i + size]
+        yield lst[i : i + size]
+
 
 def extract_audio_features():
     track_ids = load_track_ids()
@@ -35,7 +38,7 @@ def extract_audio_features():
             RECCOBEATS_URL,
             params=params,
             headers={"Accept": "application/json"},
-            timeout=30
+            timeout=30,
         )
 
         print(f"Batch {batch_num} | Status {response.status_code}")
@@ -50,16 +53,14 @@ def extract_audio_features():
 
         print(f"  Retrieved {len(batch_features)} features")
 
-    output = {
-        "feature_count": len(features),
-        "audio_features": features
-    }
+    output = {"feature_count": len(features), "audio_features": features}
 
     # Upload to S3
     s3_uri = upload_json_to_s3(output, "audio_features")
-    
+
     print(f"✅ Saved {len(features)} audio features to S3")
     return s3_uri
+
 
 if __name__ == "__main__":
     extract_audio_features()

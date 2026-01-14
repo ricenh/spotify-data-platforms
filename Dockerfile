@@ -1,5 +1,7 @@
+# Spotify Data Pipeline Container
 FROM python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
 # Install system dependencies
@@ -14,11 +16,13 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy code
+# Copy application code
 COPY src/ ./src/
 COPY sql/ ./sql/
 COPY run_pipeline.py .
-COPY .env .
+
+# Copy .env if it exists (for local dev only)
+COPY .env* ./
 
 # Set Python path
 ENV PYTHONPATH=/app

@@ -6,6 +6,7 @@ from src.extract.s3_utils import upload_json_to_s3
 URL = "https://api.spotify.com/v1/me/player/recently-played"
 LIMIT = 50
 
+
 def extract_recently_played():
     headers = get_headers()
     params = {"limit": LIMIT}
@@ -34,14 +35,15 @@ def extract_recently_played():
     output = {
         "extracted_at": datetime.utcnow().isoformat(),
         "count": len(all_items),
-        "items": all_items
+        "items": all_items,
     }
 
     # Upload to S3 instead of local disk
     s3_uri = upload_json_to_s3(output, "recently_played")
-    
+
     print(f"✅ Saved {len(all_items)} plays to S3")
     return s3_uri
+
 
 if __name__ == "__main__":
     extract_recently_played()

@@ -1,6 +1,7 @@
 from src.load.db_rds import get_rds_conn
 from src.extract.s3_utils import download_json_from_s3
 
+
 def load_audio_features():
     # Read from S3
     data = download_json_from_s3("audio_features")
@@ -20,15 +21,16 @@ def load_audio_features():
                 af.get("energy"),
                 af.get("tempo"),
                 af.get("valence"),
-                af.get("loudness")
-            )
+                af.get("loudness"),
+            ),
         )
 
     conn.commit()
     print(f"✅ Loaded {len(data['audio_features'])} audio features to RDS")
-    
+
     cur.close()
     conn.close()
+
 
 if __name__ == "__main__":
     load_audio_features()

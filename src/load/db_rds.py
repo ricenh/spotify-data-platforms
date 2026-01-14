@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def get_rds_conn():
     """Connect to AWS RDS Postgres"""
     return psycopg2.connect(
@@ -12,8 +13,9 @@ def get_rds_conn():
         dbname=os.getenv("RDS_DATABASE"),
         user=os.getenv("RDS_USER"),
         password=os.getenv("RDS_PASSWORD"),
-        connect_timeout=10
+        connect_timeout=10,
     )
+
 
 if __name__ == "__main__":
     # Test connection

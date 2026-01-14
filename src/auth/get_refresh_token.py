@@ -18,6 +18,7 @@ SCOPE = "user-read-recently-played"
 AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 
+
 class CallbackHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         code = self.path.split("code=")[1]
@@ -25,9 +26,7 @@ class CallbackHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"You can close this window.")
 
-        auth_header = base64.b64encode(
-            f"{CLIENT_ID}:{CLIENT_SECRET}".encode()
-        ).decode()
+        auth_header = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
 
         headers = {
             "Authorization": f"Basic {auth_header}",
@@ -47,6 +46,7 @@ class CallbackHandler(BaseHTTPRequestHandler):
         print(tokens["refresh_token"])
         print("\nDO NOT COMMIT IT\n")
 
+
 def main():
     params = {
         "client_id": CLIENT_ID,
@@ -60,6 +60,7 @@ def main():
 
     server = HTTPServer(("localhost", 8888), CallbackHandler)
     server.handle_request()
+
 
 if __name__ == "__main__":
     main()

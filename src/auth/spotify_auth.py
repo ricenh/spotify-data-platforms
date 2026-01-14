@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def get_access_token():
     auth_header = base64.b64encode(
         f"{os.getenv('SPOTIFY_CLIENT_ID')}:{os.getenv('SPOTIFY_CLIENT_SECRET')}".encode()
@@ -20,6 +21,8 @@ def get_access_token():
         "refresh_token": os.getenv("SPOTIFY_REFRESH_TOKEN"),
     }
 
-    r = requests.post("https://accounts.spotify.com/api/token", headers=headers, data=data)
+    r = requests.post(
+        "https://accounts.spotify.com/api/token", headers=headers, data=data
+    )
     r.raise_for_status()
     return r.json()["access_token"]
