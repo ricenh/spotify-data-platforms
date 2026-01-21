@@ -1,11 +1,11 @@
 import psycopg2
-
+import os
 
 def get_conn():
     return psycopg2.connect(
-        host="localhost",
-        port=5432,
-        dbname="spotify",
-        user="spotify_user",
-        password="spotify_pass",
+        host=os.getenv('RDS_HOST'),
+        port=int(os.getenv('RDS_PORT', 5432)),
+        dbname=os.getenv('RDS_DATABASE', 'spotify'),
+        user=os.getenv('RDS_USER', 'spotify_admin'),
+        password=os.getenv('RDS_PASSWORD')
     )
